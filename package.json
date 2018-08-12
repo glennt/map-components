@@ -6,8 +6,11 @@
     "react-scripts": "1.1.4"
   },
   "dependencies": {
+    "lodash": "^4.17.10",
     "react": "^16.4.2",
-    "react-dom": "^16.4.2"
+    "react-dom": "^16.4.2",
+    "react-google-maps": "^9.4.5",
+    "recompose": "^0.28.2"
   },
   "scripts": {
     "start": "react-scripts start",

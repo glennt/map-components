@@ -4,7 +4,7 @@
 export default {
 
     googleCloud: {
-        apiKey: ''
+        apiKey: 'AIzaSyDqGks5RQGBn6RmcxiHwmNBSOzOoFXcZMo'
     }
 
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import _ from 'lodash';
-import { compose, withProps, lifecycle } from "recompose";
+import { compose, withProps, lifecycle, withState, withHandlers } from "recompose";
 import {
   withScriptjs,
   withGoogleMap,
@@ -15,6 +15,8 @@ import config from "../config/config";
 /*eslint-disable no-undef*/
 
 const Location = compose(
+  withState('currentLocation', 'setCurrentLocation', {}),
+  withState('center', 'setCenter', { lat: -34.397, lng: 150.644 }),
   withProps({
     /**
      * Note: create and replace your own key in the Google console.
@@ -27,18 +29,21 @@ const Location = compose(
     containerElement: <div style={{ height: `400px` }} />,
     mapElement: <div style={{ height: `100%` }} />
   }),
+  withHandlers({
+    onClick: props => event => {
+      props.setCurrentLocation({lat:event.latLng.lat(), lng:event.latLng.lng()});      
+    },
+  }),
   withScriptjs,
   withGoogleMap,
   lifecycle({
+
     componentWillMount() {
 
       const refs = {}
 
       this.setState({
-        bounds: null,
-        center: {
-          lat: 41.9, lng: -87.624
-        },
+        bounds: null,       
         markers: [],
         onMapMounted: ref => {
           refs.map = ref;
@@ -57,31 +62,19 @@ const Location = compose(
           const places = refs.searchBox.getPlaces();
           const bounds = new google.maps.LatLngBounds();
 
-          places.forEach(place => {
-            if (place.geometry.viewport) {
-              bounds.union(place.geometry.viewport)
-            } else {
-              bounds.extend(place.geometry.location)
-            }
-          });
-          const nextMarkers = places.map(place => ({
-            position: place.geometry.location,
-          }));
-          const nextCenter = _.get(nextMarkers, '0.position', this.state.center);
+            var place = places[0]
 
-          this.setState({
-            center: nextCenter,
-            markers: nextMarkers,
-          });
-          // refs.map.fitBounds(bounds);
-        },
+            var latLng = place.geometry.location;
+            var latLngObj = {lat: latLng.lat(), lng: latLng.lng()};            
+            this.props.setCurrentLocation(latLngObj);        
+            this.props.setCenter(latLngObj);
+        }
       })
     }
 }), 
-)(props => {
-
+)((props) => {    
   return(  
-    <GoogleMap defaultZoom={8} defaultCenter={{ lat: -34.397, lng: 150.644 }}>
+    <GoogleMap defaultZoom={8} center={props.center} defaultCenter={{ lat: -34.397, lng: 150.644 }} onClick={props.onClick} streetViewControl={false}>
         <SearchBox
         ref={props.onSearchBoxMounted}
         bounds={props.bounds}     
@@ -106,7 +99,7 @@ const Location = compose(
             }}
         />
         </SearchBox>
-        <Marker position={{ lat: -34.397, lng: 150.644 }} />
+            <Marker position={props.currentLocation} />
         
     </GoogleMap>
     )

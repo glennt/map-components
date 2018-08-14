@@ -4,7 +4,7 @@
 export default {
 
     googleCloud: {
-        apiKey: 'putKeyHere!'
+        apiKey: ''
     }
 
 }

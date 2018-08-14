@@ -14,7 +14,7 @@ import config from "../config/config";
 
 /*eslint-disable no-undef*/
 
-const Location = compose(
+const LocationPickerMap = compose(
   withState('currentLocation', 'setCurrentLocation', {}),
   withState('center', 'setCenter', { lat: -34.397, lng: 150.644 }),
   withProps({
@@ -25,9 +25,9 @@ const Location = compose(
      */
     googleMapURL:
       `https://maps.googleapis.com/maps/api/js?key=${config.googleCloud.apiKey}&v=3.exp&libraries=geometry,drawing,places`,
-    loadingElement: <div style={{ height: `100%` }} />,
+    loadingElement: <div style={{ height: `90%` }} />,
     containerElement: <div style={{ height: `400px` }} />,
-    mapElement: <div style={{ height: `100%` }} />
+    mapElement: <div style={{ height: `90%` }} />
   }),
   withHandlers({
     onClick: props => event => {
@@ -72,7 +72,8 @@ const Location = compose(
       })
     }
 }), 
-)((props) => {    
+)((props) => {
+      
   return(  
     <GoogleMap defaultZoom={8} center={props.center} defaultCenter={{ lat: -34.397, lng: 150.644 }} onClick={props.onClick} streetViewControl={false}>
         <SearchBox
@@ -83,11 +84,11 @@ const Location = compose(
         >
         <input
             type="text"
-            placeholder="Customized your placeholder"
+            placeholder="Search"
             style={{
             boxSizing: `border-box`,
             border: `1px solid transparent`,
-            width: `240px`,
+            width: `300px`,
             height: `32px`,
             marginTop: `27px`,
             padding: `0 12px`,
@@ -105,6 +106,6 @@ const Location = compose(
     )
 });
 
-export default Location;
+export default LocationPickerMap;
 
 /*eslint-disable no-undef*/

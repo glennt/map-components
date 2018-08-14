@@ -4,20 +4,26 @@ import {
     Modal,
     Button
 } from 'react-bootstrap';
+import { getPlaceValueString } from '../utils/mapUtils';
 
 class LocationPicker extends Component {
    
   constructor(props) {
       super(props);
       this.state = {
-          showMap: false
+          showMap: false,
+          value: {}
       }
       this.showMap = this.showMap.bind(this);
       this.hideMap = this.hideMap.bind(this);      
+      this.onChange = this.onChange.bind(this);
   }  
     
+  onChange(value) {
+      this.setState({value: value});
+  }
+
   showMap() {
-        console.log('show map');
         this.setState({showMap: true});
   }
 
@@ -27,10 +33,9 @@ class LocationPicker extends Component {
 
   render() {
 
-    var modal;
+    let value = getPlaceValueString(this.state.value);
 
- 
-        modal = <Modal
+    let modal = <Modal
             show={this.state.showMap}
             onHide={this.hideMap}
             container={this}
@@ -41,17 +46,22 @@ class LocationPicker extends Component {
             </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <div className="map-container">
-                    <LocationPickerMap />
+                <div className="map-modal-body-container">
+                    <div className="map-container">
+                        <LocationPickerMap onChange={this.onChange}/>
+                    </div>
+                    <div>
+                        <p>Selected Location</p>
+                        <p dangerouslySetInnerHTML={{__html:value}}/>
+                    </div>
                 </div>
             </Modal.Body>
             <Modal.Footer>
             <Button onClick={this.hideMap}>Close</Button>
             </Modal.Footer>
         </Modal>
- 
 
-
+	
 
     return (
         <div>

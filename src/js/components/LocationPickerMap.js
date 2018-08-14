@@ -9,6 +9,7 @@ import {
   Marker
 } from "react-google-maps";
 import SearchBox from "react-google-maps/lib/components/places/SearchBox";
+import {convertGoogleMapPlaceToValue} from '../utils/mapUtils';
 
 import config from "../config/config";
 
@@ -16,6 +17,7 @@ import config from "../config/config";
 
 const LocationPickerMap = compose(
   withState('currentLocation', 'setCurrentLocation', {}),
+  withState('currentLocationValue', 'setCurrentLocationValue', {}),
   withState('center', 'setCenter', { lat: -34.397, lng: 150.644 }),
   withProps({
     /**
@@ -25,14 +27,28 @@ const LocationPickerMap = compose(
      */
     googleMapURL:
       `https://maps.googleapis.com/maps/api/js?key=${config.googleCloud.apiKey}&v=3.exp&libraries=geometry,drawing,places`,
-    loadingElement: <div style={{ height: `90%` }} />,
-    containerElement: <div style={{ height: `400px` }} />,
-    mapElement: <div style={{ height: `90%` }} />
+    loadingElement: <div style={{ height: `100%` }} />,
+    containerElement: <div style={{ height: `500px` }} />,
+    mapElement: <div style={{ height: `100%` }} />
   }),
   withHandlers({
-    onClick: props => event => {
-      props.setCurrentLocation({lat:event.latLng.lat(), lng:event.latLng.lng()});      
-    },
+    onChangeInternal: props => value =>{
+
+      if(props.onChange) {
+        props.onChange(value);
+      }
+    }
+  }),
+  withHandlers({
+    onClick: (props) => event => {
+
+      var latLng = event.latLng;
+      var value = {longitude:latLng.lng(), latitude:latLng.lat()}    
+      props.setCurrentLocationValue(value);
+      props.setCurrentLocation({lng:latLng.lng(), lat:latLng.lat()});      
+
+      props.onChangeInternal(value);
+    }  
   }),
   withScriptjs,
   withGoogleMap,
@@ -55,17 +71,22 @@ const LocationPickerMap = compose(
           })
         },
         onSearchBoxMounted: ref => {
-            console.log("Search box mounted");
           refs.searchBox = ref;
         },
         onPlacesChanged: () => {
-          const places = refs.searchBox.getPlaces();
-          const bounds = new google.maps.LatLngBounds();
-
+            const places = refs.searchBox.getPlaces();
+            
             var place = places[0]
 
             var latLng = place.geometry.location;
             var latLngObj = {lat: latLng.lat(), lng: latLng.lng()};            
+
+            var placeValue = convertGoogleMapPlaceToValue(place);
+
+            this.props.setCurrentLocationValue(placeValue);
+            
+            this.props.onChangeInternal(placeValue);
+
             this.props.setCurrentLocation(latLngObj);        
             this.props.setCenter(latLngObj);
         }
@@ -75,7 +96,7 @@ const LocationPickerMap = compose(
 )((props) => {
       
   return(  
-    <GoogleMap defaultZoom={8} center={props.center} defaultCenter={{ lat: -34.397, lng: 150.644 }} onClick={props.onClick} streetViewControl={false}>
+    <GoogleMap defaultZoom={8} center={props.center} defaultCenter={{ lat: -34.397, lng: 150.644 }} onClick={props.onClick} options={{streetViewControl:false}}>
         <SearchBox
         ref={props.onSearchBoxMounted}
         bounds={props.bounds}     
@@ -100,7 +121,7 @@ const LocationPickerMap = compose(
             }}
         />
         </SearchBox>
-            <Marker position={props.currentLocation} />
+        <Marker position={props.currentLocation} />
         
     </GoogleMap>
     )

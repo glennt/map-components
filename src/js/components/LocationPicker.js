@@ -4,7 +4,7 @@ import {
     Modal,
     Button
 } from 'react-bootstrap';
-import { getPlaceValueString } from '../utils/mapUtils';
+import { getLocationValueString } from '../utils/mapUtils';
 
 class LocationPicker extends Component {
    
@@ -33,7 +33,7 @@ class LocationPicker extends Component {
 
   render() {
 
-    let value = getPlaceValueString(this.state.value);
+    let value = getLocationValueString(this.state.value);
 
     let modal = <Modal
             show={this.state.showMap}

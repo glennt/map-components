@@ -10,7 +10,7 @@ export function convertGoogleMapPlaceToValue(place) {
         addressComponents[addressComponent.types[0]] = addressComponent.long_name;
     });
 
-    value['address_components'] = addressComponents;
+    value.address_components = addressComponents;
 
     if(place.formatted_address) value.address = place.formatted_address;
     if(place.name) value.name = place.name;
@@ -25,17 +25,17 @@ export function convertGoogleMapPlaceToValue(place) {
     return value;
 }
 
-export function getPlaceValueString(placeValue) {
+export function getLocationValueString(location) {
     let value = '';
-    if (placeValue.hasOwnProperty("name") && placeValue.hasOwnProperty("address")) {
-        value = placeValue.name + "<br/>" + placeValue.address;
-    } else if (placeValue.hasOwnProperty("address")) {
-        value = placeValue.address;
-    } else if (placeValue.hasOwnProperty("name")) {
-        value = placeValue.name;
-    } else if (placeValue.hasOwnProperty("latitude")) {
-        value = "Latitude: " + placeValue.latitude + "<br/>Longitude: " + placeValue.longitude;
-    } else if (placeValue !== "") {
+    if (locatoin.hasOwnProperty("name") && location.hasOwnProperty("address")) {
+        value = location.name + "<br/>" + location.address;
+    } else if (location.hasOwnProperty("address")) {
+        value = location.address;
+    } else if (location.hasOwnProperty("name")) {
+        value = location.name;
+    } else if (location.hasOwnProperty("latitude")) {
+        value = "Latitude: " + location.latitude + "<br/>Longitude: " + location.longitude;
+    } else if (location !== "") {
         //value = stateValue + "";
     } else {
         value = "No location";

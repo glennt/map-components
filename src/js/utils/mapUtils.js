@@ -27,7 +27,7 @@ export function convertGoogleMapPlaceToValue(place) {
 
 export function getLocationValueString(location) {
     let value = '';
-    if (locatoin.hasOwnProperty("name") && location.hasOwnProperty("address")) {
+    if (location.hasOwnProperty("name") && location.hasOwnProperty("address")) {
         value = location.name + "<br/>" + location.address;
     } else if (location.hasOwnProperty("address")) {
         value = location.address;

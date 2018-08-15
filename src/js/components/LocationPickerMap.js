@@ -25,8 +25,7 @@ const LocationPickerMap = compose(
      * https://console.developers.google.com/apis/dashboard
      * The key "AIzaSyBkNaAGLEVq0YLQMi-PYEMabFeREadYe1Q" can be ONLY used in this sandbox (no forked).
      */
-    googleMapURL:
-      `https://maps.googleapis.com/maps/api/js?key=${config.googleCloud.apiKey}&v=3.exp&libraries=geometry,drawing,places`,
+    googleMapURL:'https://www.google.com',
     loadingElement: <div style={{ height: `100%` }} />,
     containerElement: <div style={{ height: `500px` }} />,
     mapElement: <div style={{ height: `100%` }} />

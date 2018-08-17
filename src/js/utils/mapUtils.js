@@ -27,18 +27,20 @@ export function convertGoogleMapPlaceToValue(place) {
 
 export function getLocationValueString(location) {
     let value = '';
-    if (location.hasOwnProperty("name") && location.hasOwnProperty("address")) {
-        value = location.name + "<br/>" + location.address;
-    } else if (location.hasOwnProperty("address")) {
-        value = location.address;
-    } else if (location.hasOwnProperty("name")) {
-        value = location.name;
-    } else if (location.hasOwnProperty("latitude")) {
-        value = "Latitude: " + location.latitude + "<br/>Longitude: " + location.longitude;
-    } else if (location !== "") {
-        //value = stateValue + "";
-    } else {
-        value = "No location";
+    if(!_.isUndefined(location) && location !== null) {
+        if (location.hasOwnProperty("name") && location.hasOwnProperty("address")) {
+            value = location.name + "<br/>" + location.address;
+        } else if (location.hasOwnProperty("address")) {
+            value = location.address;
+        } else if (location.hasOwnProperty("name")) {
+            value = location.name;
+        } else if (location.hasOwnProperty("latitude")) {
+            value = "Latitude: " + location.latitude + "<br/>Longitude: " + location.longitude;
+        } else if (location !== "") {
+            //value = stateValue + "";
+        } else {
+            value = "No location";
+        }
     }
 
     return value;

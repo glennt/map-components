@@ -16,8 +16,8 @@ import config from "../config/config";
 /*eslint-disable no-undef*/
 
 const LocationPickerMap = compose(
-  withState('currentLocation', 'setCurrentLocation', {}),
   withState('currentLocationValue', 'setCurrentLocationValue', {}),
+  withState('places', 'setPlaces', []),
   withState('center', 'setCenter', { lat: -34.397, lng: 150.644 }),
   withProps({
     /**
@@ -33,20 +33,24 @@ const LocationPickerMap = compose(
   withHandlers({
     onChangeInternal: props => value =>{
 
+      props.setCurrentLocationValue(value);           
       if(props.onChange) {
         props.onChange(value);
       }
     }
   }),
   withHandlers({
-    onClick: (props) => event => {
-
+    onClickMap: (props) => event => {
       var latLng = event.latLng;
       var value = {longitude:latLng.lng(), latitude:latLng.lat()}    
       props.setCurrentLocationValue(value);
-      props.setCurrentLocation({lng:latLng.lng(), lat:latLng.lat()});      
-
       props.onChangeInternal(value);
+    }  
+  }),
+  withHandlers({
+    onClickMarker: (props) => place => {
+      var placeValue = convertGoogleMapPlaceToValue(place);                 
+      props.onChangeInternal(placeValue);
     }  
   }),
   withScriptjs,
@@ -59,7 +63,6 @@ const LocationPickerMap = compose(
 
       this.setState({
         bounds: null,       
-        markers: [],
         onMapMounted: ref => {
           refs.map = ref;
         },
@@ -74,28 +77,53 @@ const LocationPickerMap = compose(
         },
         onPlacesChanged: () => {
             const places = refs.searchBox.getPlaces();
-            
-            var place = places[0]
 
-            var latLng = place.geometry.location;
-            var latLngObj = {lat: latLng.lat(), lng: latLng.lng()};            
+            if(places.length === 1) {
+              var place = places[0]
 
-            var placeValue = convertGoogleMapPlaceToValue(place);
+              var latLng = place.geometry.location;
+              var latLngObj = {lat: latLng.lat(), lng: latLng.lng()};            
 
-            this.props.setCurrentLocationValue(placeValue);
-            
-            this.props.onChangeInternal(placeValue);
+              var placeValue = convertGoogleMapPlaceToValue(place);                    
+              this.props.onChangeInternal(placeValue);
 
-            this.props.setCurrentLocation(latLngObj);        
-            this.props.setCenter(latLngObj);
+              this.props.setPlaces([]);
+              this.props.setCenter(latLngObj);
+
+            } else if (places.length > 1) {
+
+              var place = places[0]
+
+              var latLng = place.geometry.location;
+              var latLngObj = {lat: latLng.lat(), lng: latLng.lng()};            
+      
+              this.props.onChangeInternal({});
+
+              this.props.setPlaces(places);
+              this.props.setCenter(latLngObj);
+            }
         }
       })
     }
 }), 
 )((props) => {
       
+  var currentLocationMarker;
+  if(props.currentLocationValue) {
+    var currentLocationValue = props.currentLocationValue;
+    currentLocationMarker = <Marker position={{lat: currentLocationValue.latitude, lng: currentLocationValue.longitude}} />
+  }
+
+  var markers = [];
+  if(props.places) {    
+    var markers = props.places.map((place, idx) => {
+      var location = place.geometry.location;
+      return <Marker key={'marker-' + idx} position={{lat: location.lat(), lng: location.lng()}} onClick={(e) => { props.onClickMarker(place) }}/>;
+    });
+  }
+
   return(  
-    <GoogleMap defaultZoom={8} center={props.center} defaultCenter={{ lat: -34.397, lng: 150.644 }} onClick={props.onClick} options={{streetViewControl:false}}>
+    <GoogleMap defaultZoom={8} center={props.center} defaultCenter={{ lat: -34.397, lng: 150.644 }} onClick={props.onClickMap} options={{streetViewControl:false}}>
         <SearchBox
         ref={props.onSearchBoxMounted}
         bounds={props.bounds}     
@@ -120,8 +148,8 @@ const LocationPickerMap = compose(
             }}
         />
         </SearchBox>
-        <Marker position={props.currentLocation} />
-        
+        {currentLocationMarker}
+        {markers}
     </GoogleMap>
     )
 });
